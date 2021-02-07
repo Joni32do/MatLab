@@ -5,7 +5,7 @@
 
 
 %Creating randomdata:
-n = 300;
+n = 2000;
 xi = 2*rand(n,1)-1;
 yi = 2*rand(n,1)-1;
 zi = gauss(xi,yi);
@@ -13,10 +13,10 @@ zi = gauss(xi,yi);
 
 
 
-m = 300;
+m = 200;
 xj = 2*rand(m,1)-1;
 yj = 2*rand(m,1)-1;
-zj = inv_dist(xi,yi,zi,xj,yj,2,'loopIJ')
+zj = inv_dist(xi,yi,zi,xj,yj,2,'loopIJ');
 
 
 plot3(xi,yi,zi, 'ro');

@@ -26,44 +26,52 @@ if size(xj) ~= size(yj)
     error('Wrong Dimensions in points to interpolate');
 end
 
+tic
 
 numelI = numel(xi);
 numelJ = numel(xj);
 weights = zeros(numelI,numelJ);
 zj = zeros(numelJ,1);
+metrikFun = @(x,y) sqrt(x.^2+y.^2)^d
 
 %First we calculate the corresponding weights by the given method
 switch method
     case {'loopIJ'}
         %You must calculate for every point to evaluate its distance to
         %every point of the input data
-        disp('this works')
         for i = 1:numelI
            for j = 1:numelJ
-               metrik = (xi(i)-xj(j))^2+(yi(i)-xj(j))^2;
+               metrik = sqrt((xi(i)-xj(j)).^2+(yi(i)-yj(j)).^2);
                if metrik == 0
                    weights(i,j) = 0;
                else
-                   weights(i,j) = 1/metrik;
+                   weights(i,j) = 1/metrik.^p;
                end
            end
-        end
-        disp(weights)
-      
+        end    
         
         
     case {'loopI'}
-        disp('Test')
+        for i = 1:numelI
+          metrik = sqrt((xi(i)-xj).^2+(yi(i)-yj).^2)
+          %The binary operater should 0 out any value which is nan
+          weights(i) = (metrik ~= 0) .* (1/metrik^d); 
+            
+        end
         
         
         
     case {'loopJ'}
-        disp('Test')
-        
+        for j = 1:numelJ
+               metrik = sqrt((xi-xj(j)).^2+(yi-yj(j)).^2);
+               %The binary operater should 0 out any value which is nan
+               weights(j) = (metrik ~= 0) .* (1/metrik^d); 
+        end
+        weights = weights';
         
         
     case {'bsxfun'}
-        
+        bsxfun(metrikFun, xi, xj)
         
         
         
@@ -91,9 +99,10 @@ for j = 1:numelJ
         zj(j) = zi(index);
     %Otherwise it will interpolate it
     else
-        disp('Das funktioiniert eigentlich')
-       zj(j) = sum(zi.*weights(:,j))/sum(weights(:,j));
+        zj(j) = sum(zi.*weights(:,j))./sum(weights(:,j));
     end
     
 end
+
+toc
 end
